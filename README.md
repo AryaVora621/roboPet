@@ -157,5 +157,8 @@ Close the balance loop, add OLED affective states, and finalize Phase 1.
 ## Status
 Phase 1 · Project infrastructure complete (Interactive Roadmap Deployed). Starting Day 1 (Power system).
 
+## AI Disclaimer
+Parts of the code, scripts, and documentation in this repository have been written or scaffolded with the assistance of an AI coding agent. The architecture, goals, and mechanical design remain strictly human-led.
+
 ## License
 Open-source (hardware + firmware + software). License TBD.
