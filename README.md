@@ -79,50 +79,87 @@ Concepts in play: fixed-timestep loops, complementary-filter sensor fusion, 2-li
 
 ## Roadmap
 
-### Phase 1 — ~4 weeks (microcontroller walker)
-Each stage ends at a **demo gate**: a concrete, video-able result that isolates one set of unknowns and builds the portfolio.
+This roadmap is a detailed field manual for Phase 1. 
 
-**Stage 0 — Bench bring-up (no filament needed)**
-- [ ] Source consumables + Lamington Road run
-- [ ] Set servo rail to ~7.2 V and logic rail to 5.0 V (no load, multimeter-verified)
-- [ ] Breadboard logic; bring up each component individually (LED, OLED, WS2812, single servo, IMU pitch/roll to Serial)
-- [ ] Stand up documentation + posting workflow
-- [ ] **Gate:** every component proven on the bench
+### DAYS 1–4 — BENCH BRING-UP (no filament, electronics only)
+The goal is to prove every single component works before it goes inside a chassis. A bug on the breadboard takes five minutes to fix; after assembly, it takes three hours.
 
-**Stage 1 — Body + wiring**
-- [ ] Print PLA chassis, 4 legs / 8 joints, mounts, brackets
-- [ ] Assemble two-rail power on-chassis (fuse → switch → bucks → bulk caps, common ground, battery-monitor divider)
-- [ ] Move electronics to perfboard; wire 8 servos + IMU + OLED + LED
-- [ ] **Gate:** assembled robot powers up; all 8 servos sweep without browning out the ESP32
+**Day 1 — Power system only**
+- [ ] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
+- [ ] Bring up XL4016 #1 with no load, trim to exactly 7.2 V
+- [ ] Bring up XL4016 #2 to exactly 5.0 V
+- [ ] Wire both bucks in parallel from the pack and confirm both rails hold voltages
+- [ ] Add 1000 µF cap on each output rail and measure again (check for voltage pull-down)
 
-**Stage 2 — It stands**
-- [ ] Calibrate joint neutrals (`trim[]` offsets)
-- [ ] Implement complementary filter → stable pitch/roll
-- [ ] Write 2-link inverse kinematics; verify one leg reaches an (x,y) target; roll out to all four
-- [ ] **Gate:** robot unfolds and holds a stable, level stance
+**Day 2 — ESP32 and digital peripherals**
+- [ ] Power ESP32 from 5 V logic rail via VIN pin, confirm it boots
+- [ ] Blink an LED on a GPIO pin
+- [ ] Bring up OLED over I2C (print 'roboPet')
+- [ ] Bring up WS2812 (cycle through colors)
+- [ ] Check logic rail current draw with OLED/WS2812 running (< 500 mA)
 
-**Stage 3 — It walks**
-- [ ] Gait engine: phase clock + foot trajectories (static-stable creep gait)
-- [ ] Forward walking, then turning
-- [ ] **Gate:** walks forward and turns reliably on flat ground
+**Day 3 — Servos and IMU**
+- [ ] Plug one servo into 7.2 V rail (not breadboard), signal to ESP32. Sweep 0 to 180°
+- [ ] Tune attach() pulse range (500-2500 µs defaults might be wrong). Listen for grinding
+- [ ] Wire all 8 servos. Sweep simultaneously and watch 7.2 V rail sag (add bulk caps if below 6.8 V)
+- [ ] Wire MPU6050 (I2C 0x68). Print raw accel/gyro to Serial at 100 Hz. Verify gravity on Z axis
 
-**Stage 4 — It's alive (finish Phase 1)**
-- [ ] Close the balance loop: proportional → PID body leveling from the IMU
-- [ ] OLED face expressions + LED moods
-- [ ] Gain tuning, cable management, low-battery cutoff
-- [ ] Stretch: Bluetooth remote drive
-- [ ] **Gate:** walking, self-leveling, expressive robot — Phase 1 complete
+**Day 4 — System integration and Lamington Road**
+- [ ] Wire everything together on breadboard (rails, ESP32, 8 servos, IMU, OLED, LED)
+- [ ] System test: startup sequence -> stream pitch/roll to OLED while servos hold neutral
+- [ ] Lamington Road run: buy consumables, look for PCA9685 breakout and cheap 8-channel logic analyzer
 
-> Slack: if a week slips, Stage 4 is the compressible part (a simpler leveling routine still counts as done). Protect Stages 2–3 — they carry the core learning.
+### WEEK 1 — PRINTING, WIRING, AND CHASSIS ASSEMBLY
+Print PLA structural parts, migrate electronics to perfboard, assemble two-rail power.
 
-### Phase 2 — back in the US (extend the platform)
-- [ ] Design 12-servo (3 DOF/leg) version in CAD
-- [ ] Build accurate MJCF/URDF model
-- [ ] RL in simulation (MuJoCo Playground / MJX on a Tesla P40): disturbance rejection + terrain
-- [ ] System-identify real servos; domain randomization; sim-to-real transfer
-- [ ] Add Raspberry Pi 5 high-level layer (UART to the MCU)
-- [ ] Computer vision (object localization)
-- [ ] LLM-as-planner over a skill library → natural-language commands ("push the ball")
+**Mechanical & Electrical Assembly**
+- [ ] Print body, legs, brackets (40-50% infill for torque parts, 3+ walls)
+- [ ] Add temporary adhesive rubber bumpers to feet
+- [ ] Migrate logic electronics from breadboard to perfboard
+- [ ] Mount 7.2V terminal block with bulk caps for servo power bus (separate from perfboard)
+- [ ] Tie all grounds (7.2V, 5.0V, ESP32, IMU, servos) to a single common ground
+
+### WEEK 2 — CALIBRATION, SENSOR FUSION, IK (It Stands)
+High-density learning week: servo calibration, complementary filter, and 2-link inverse kinematics.
+
+**Calibration & Stance**
+- [ ] Command servos to 90°, measure physical offset, and store in trim[] array
+- [ ] Write standPose() function (straight legs, level body)
+- [ ] Test standPose() and check for lean due to remaining offsets
+
+**Sensor Fusion & IK**
+- [ ] Implement complementary filter (pitch = 0.98*(pitch+gyro*dt) + 0.02*accel)
+- [ ] Tape robot to a book, tilt it, tune alpha coefficients via Arduino Serial Plotter
+- [ ] Implement 2-link IK (math for knee and hip angles from x,y targets)
+- [ ] Command leg 0 to specific x,y and verify angles. Repeat for all 4 legs
+
+### WEEK 3 — GAIT GENERATION (It Walks)
+Implement a static-stable creep gait (one leg swings, three form a base). Iterative tuning.
+
+**Gait Implementation**
+- [ ] Implement phase clock (0 to 1) with phase offset/duty cycle for each leg
+- [ ] Pass x,y targets from gait to IK layer for forward walking
+- [ ] Tune step height, length, and frequency until forward walk is stable
+- [ ] Implement turning (scale step length differently for left vs right legs)
+
+### WEEK 4 — BALANCE, PERSONALITY, AND FINISHING (It's Alive)
+Close the balance loop, add OLED affective states, and finalize Phase 1.
+
+**Balance & Personality**
+- [ ] Add P correction to foot Y/height targets (correction = Kp * pitchError)
+- [ ] Add D term to damp oscillation (PD controller)
+- [ ] Create OLED face state machine (idle, walking, alert, happy, low battery)
+- [ ] Implement WS2812 LED moods (green=healthy, amber=low battery, blue pulse=idle)
+- [ ] Integrate low-battery cutoff (finish stride, fold down, tired face, sleep)
+
+### DAILY HABITS & CONTENT STRATEGY
+Rules for sustainability: 3 outputs a day (work, git, film). Filming takes 5 mins.
+
+**Content & Git**
+- [ ] Commit any firmware changes daily with a note
+- [ ] Take a physical photo of the build daily
+- [ ] Update DEVLOG.md (What worked, what failed, what's next)
+- [ ] Film a 20-30s daily clip (Progress, Explainer, or Failure)
 
 ---
 

@@ -224,11 +224,28 @@ async function fetchProgressApi() {
 }
 
 async function saveProgressApi(progressObj) {
+    const tasks = [];
+    roadmapData.forEach(phase => {
+        phase.sections.forEach(sec => {
+            sec.subsections.forEach(sub => {
+                if (sub.tasks) {
+                    sub.tasks.forEach(t => {
+                        tasks.push({
+                            id: t.id,
+                            text: t.text,
+                            completed: !!progressObj[t.id]
+                        });
+                    });
+                }
+            });
+        });
+    });
+
     try {
         const res = await fetch('/api/progress', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(progressObj)
+            body: JSON.stringify({ progressObj, tasks })
         });
         if (!res.ok) throw new Error('API save failed');
     } catch (e) {
