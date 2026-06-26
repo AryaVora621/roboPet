@@ -92,10 +92,10 @@ My goal is to prove every single component works before it goes inside a chassis
 - [x] Add 1000 µF cap on each output rail and measure again (check for voltage pull-down)
 
 **Day 2 — ESP32 and digital peripherals**
-- [ ] Power ESP32 from 5 V logic rail via VIN pin, confirm it boots
-- [ ] Blink an LED on a GPIO pin
-- [ ] Bring up OLED over I2C (print 'roboPet')
-- [ ] Bring up WS2812 (cycle through colors)
+- [x] Power ESP32 from 5 V logic rail via VIN pin, confirm it boots
+- [x] Blink an LED on a GPIO pin
+- [x] Bring up OLED over I2C (print 'roboPet')
+- [x] Bring up WS2812 (cycle through colors)
 - [ ] Check logic rail current draw with OLED/WS2812 running (< 500 mA)
 
 **Day 3 — Servos and IMU**
