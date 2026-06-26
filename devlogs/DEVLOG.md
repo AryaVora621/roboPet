@@ -22,7 +22,7 @@ Tomorrow is Day 1 of actual hardware bring-up. The focus is entirely on the powe
 **Date:** June 26, 2026
 
 **What I worked on:**
-Successfully set up the 3S pack and tuned both XL4016 buck converters. Flashed the ESP32 with MicroPython and developed a sleek local web server dashboard (HTML/CSS/JS) to test the I2C GEM12864-50 OLED and the WS2811 RGB LED over Wi-Fi. Added a geometric "Emotive Faces" system to the OLED display (inspired by `sesame-robot`) controllable from the dashboard, and set up WebREPL for completely wireless over-the-air code updates.
+I successfully set up the 3S pack and tuned both XL4016 buck converters. I flashed the ESP32 with MicroPython and developed a sleek local web server dashboard (HTML/CSS/JS) to test the I2C GEM12864-50 OLED and the WS2811 RGB LED over Wi-Fi. I added a geometric "Emotive Faces" system to the OLED display (inspired by `sesame-robot`) controllable from the dashboard, and set up WebREPL for completely wireless over-the-air code updates. Additionally, I polished the repository infrastructure by integrating a secure "Scripts Viewer" tab into the Vercel roadmap site, customized GitHub issue templates for hardware debugging, and added setup documentation.
 
 **What I learned:**
 - Serving a modern, glassmorphic UI directly from the ESP32 using MicroPython is lightweight and extremely effective. By splitting the logic between a responsive frontend and an API backend on the ESP32, debugging hardware becomes seamless.
