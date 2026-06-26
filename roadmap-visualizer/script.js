@@ -193,20 +193,57 @@ const roadmapData = [
     }
 ];
 
-// Local Storage Handlers
-function getProgress() {
+let globalProgressObj = {};
+
+// Local Storage Fallback Handlers
+function getLocalProgress() {
     const saved = localStorage.getItem('roboPet_progress');
     return saved ? JSON.parse(saved) : {};
 }
 
-function saveProgress(progressObj) {
+function saveLocalProgress(progressObj) {
     localStorage.setItem('roboPet_progress', JSON.stringify(progressObj));
+}
+
+// API Handlers for Vercel KV
+async function fetchProgressApi() {
+    try {
+        const res = await fetch('/api/progress');
+        if (res.ok) {
+            const data = await res.json();
+            if (data.warning) {
+                console.warn(data.warning);
+                return getLocalProgress();
+            }
+            return data;
+        }
+    } catch (e) {
+        console.error('API fetch failed, falling back to local storage', e);
+    }
+    return getLocalProgress();
+}
+
+async function saveProgressApi(progressObj) {
+    try {
+        const res = await fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(progressObj)
+        });
+        if (!res.ok) throw new Error('API save failed');
+    } catch (e) {
+        console.error('API save failed, falling back to local storage', e);
+    }
+}
+
+async function initRoadmap() {
+    globalProgressObj = await fetchProgressApi();
+    renderRoadmap();
 }
 
 function renderRoadmap() {
     const container = document.getElementById('roadmap-container');
     container.innerHTML = '';
-    const progressObj = getProgress();
     
     let globalDelay = 0;
 
@@ -263,7 +300,7 @@ function renderRoadmap() {
                     const taskList = document.createElement('ul');
                     taskList.className = 'task-list';
                     sub.tasks.forEach(task => {
-                        const isCompleted = !!progressObj[task.id];
+                        const isCompleted = !!globalProgressObj[task.id];
                         
                         const li = document.createElement('li');
                         li.className = `task-item ${isCompleted ? 'completed' : ''}`;
@@ -321,14 +358,16 @@ window.toggleTask = function(taskId, element) {
     const parent = element.parentElement;
     const isNowCompleted = parent.classList.toggle('completed');
     
-    // Save to local storage
-    const progress = getProgress();
+    // Update global state
     if (isNowCompleted) {
-        progress[taskId] = true;
+        globalProgressObj[taskId] = true;
     } else {
-        delete progress[taskId];
+        delete globalProgressObj[taskId];
     }
-    saveProgress(progress);
+    
+    // Save to local storage (as backup/fallback) and API (Vercel KV)
+    saveLocalProgress(globalProgressObj);
+    saveProgressApi(globalProgressObj);
     
     // Animation effect
     element.style.transform = 'scale(0.8)';
@@ -337,4 +376,4 @@ window.toggleTask = function(taskId, element) {
     }, 150);
 }
 
-document.addEventListener('DOMContentLoaded', renderRoadmap);
+document.addEventListener('DOMContentLoaded', initRoadmap);
