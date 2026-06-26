@@ -223,9 +223,7 @@ async function fetchProgressApi() {
     return getLocalProgress();
 }
 
-let saveTimeout = null;
-
-async function executeApiSave(progressObj) {
+async function executeApiSave(progressObj, password) {
     const tasks = [];
     roadmapData.forEach(phase => {
         phase.sections.forEach(sec => {
@@ -247,28 +245,26 @@ async function executeApiSave(progressObj) {
         const res = await fetch('/api/progress', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ progressObj, tasks })
+            body: JSON.stringify({ progressObj, tasks, password })
         });
-        if (!res.ok) throw new Error('API save failed');
+        
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || 'API save failed');
+        }
+        
         console.log('Successfully synced with GitHub/KV');
+        alert('Successfully pushed to GitHub!');
     } catch (e) {
-        console.error('API save failed, falling back to local storage', e);
+        console.error('API save failed', e);
+        alert('Failed to push: ' + e.message);
     }
 }
 
-function saveProgressApi(progressObj) {
-    // Clone the object to capture current state before debounce delay
-    const currentState = JSON.parse(JSON.stringify(progressObj));
-    
-    if (saveTimeout) {
-        clearTimeout(saveTimeout);
-    }
-    
-    // Wait 1.5 seconds after the last click before pushing to GitHub
-    // This prevents API race conditions and GitHub SHA conflicts
-    saveTimeout = setTimeout(() => {
-        executeApiSave(currentState);
-    }, 1500);
+window.handleSyncClick = function() {
+    const password = prompt('Enter sync password to push to GitHub:');
+    if (!password) return;
+    executeApiSave(globalProgressObj, password);
 }
 
 async function initRoadmap() {
@@ -400,9 +396,8 @@ window.toggleTask = function(taskId, element) {
         delete globalProgressObj[taskId];
     }
     
-    // Save to local storage (as backup/fallback) and API (Vercel KV)
+    // Save to local storage (as backup/fallback)
     saveLocalProgress(globalProgressObj);
-    saveProgressApi(globalProgressObj);
     
     // Animation effect
     element.style.transform = 'scale(0.8)';

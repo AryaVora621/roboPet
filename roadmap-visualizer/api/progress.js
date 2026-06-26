@@ -30,7 +30,13 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { progressObj, tasks } = req.body;
+      const { progressObj, tasks, password } = req.body;
+
+      // Authenticate
+      const correctPassword = process.env.SYNC_PASSWORD;
+      if (correctPassword && password !== correctPassword) {
+        return res.status(401).json({ error: 'Unauthorized: Incorrect sync password.' });
+      }
 
       // 1. Save to KV
       if (kvUrl && kvToken) {
