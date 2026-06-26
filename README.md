@@ -25,12 +25,12 @@ The architecture is intentionally two-layered so the platform scales from a simp
 ---
 
 ## Learning goals
-This project is a deliberate mechatronics learning vehicle. Mechanical design is the builder's strength; the focus areas to grow are:
+This project is my deliberate mechatronics learning vehicle. Mechanical design is my strength; the focus areas I want to grow are:
 - **Electrical design** — power distribution, grounding, signal vs. power conductors
 - **Control systems** — sensor fusion, inverse kinematics, PID, gait generation
 - **Programming** — real-time embedded firmware, later computer vision + AI orchestration
 
-Every decision is documented with its *why*, so the repo teaches the reasoning, not just the result.
+I am documenting every decision with its *why*, so this repo teaches the reasoning, not just the result.
 
 ---
 
@@ -48,7 +48,7 @@ Every decision is documented with its *why*, so the repo teaches the reasoning, 
 | Bulk caps (1000–2200 µF), fuse, switch | Power conditioning + protection |
 | PLA chassis & legs (printed on A1 Mini) | Structure; TPU feet added later for grip |
 
-> Note: verify the servos' real torque and stall current by measurement — don't trust optimistic listing specs. Stall current sizes the servo rail.
+> Note: I will verify the servos' real torque and stall current by measurement — I don't trust optimistic listing specs. Stall current sizes the servo rail.
 
 ---
 
@@ -61,7 +61,7 @@ A 3S pack feeds two independent buck converters:
 
 **Why two rails:** servo current spikes during a gait would otherwise brown out the ESP32 and cause phantom "firmware" bugs. Splitting them is the single most important power decision.
 
-**Key principle — power voltage ≠ signal voltage.** A servo's power (7.2 V) and its PWM control signal (3.3 V logic from the ESP32) are separate. The 7.2 V must never reach an ESP32 pin; the rails meet only at common ground. A 3.3→5 V level shifter is on hand in case a servo's signal input is marginal.
+**Key principle — power voltage ≠ signal voltage.** A servo's power (7.2 V) and its PWM control signal (3.3 V logic from the ESP32) are separate. The 7.2 V must never reach an ESP32 pin; the rails meet only at common ground. I have a 3.3→5 V level shifter on hand in case a servo's signal input is marginal.
 
 Also: shared common ground everywhere; inline fuse + switch on the pack; a voltage-divider into an ESP32 ADC pin for low-battery monitoring/cutoff.
 
@@ -79,10 +79,10 @@ Concepts in play: fixed-timestep loops, complementary-filter sensor fusion, 2-li
 
 ## Roadmap
 
-This roadmap is a detailed field manual for Phase 1. 
+This roadmap is my detailed field manual for Phase 1. 
 
 ### DAYS 1–4 — BENCH BRING-UP (no filament, electronics only)
-The goal is to prove every single component works before it goes inside a chassis. A bug on the breadboard takes five minutes to fix; after assembly, it takes three hours.
+My goal is to prove every single component works before it goes inside a chassis. A bug on the breadboard takes me five minutes to fix; after assembly, it takes three hours.
 
 **Day 1 — Power system only**
 - [ ] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
