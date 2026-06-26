@@ -152,29 +152,6 @@ Close the balance loop, add OLED affective states, and finalize Phase 1.
 - [ ] Implement WS2812 LED moods (green=healthy, amber=low battery, blue pulse=idle)
 - [ ] Integrate low-battery cutoff (finish stride, fold down, tired face, sleep)
 
-### DAILY HABITS & CONTENT STRATEGY
-Rules for sustainability: 3 outputs a day (work, git, film). Filming takes 5 mins.
-
-**Content & Git**
-- [ ] Commit any firmware changes daily with a note
-- [ ] Take a physical photo of the build daily
-- [ ] Update DEVLOG.md (What worked, what failed, what's next)
-- [ ] Film a 20-30s daily clip (Progress, Explainer, or Failure)
-
----
-
-## Documentation & progress
-
-The durable artifact is **this repo** — recruiters and collaborators read the README, the wiring, the build steps, and the rationale. Social posts (TikTok/Instagram) are top-of-funnel that point back here; crosslink them.
-
-Lightweight daily capture, sustainable for a month:
-- End each session with a 20–30 s clip of the day's result
-- One sentence on what was done + one thing learned or broken
-- A git commit
-- Alternate "progress" days with "explainer" days (a hard debugging day → a short "what sensor fusion actually does" clip)
-
-The same raw material feeds the social post, the README, and the eventual writeup.
-
 ---
 
 ## Status

@@ -168,26 +168,6 @@ const roadmapData = [
                         ]
                     }
                 ]
-            },
-            {
-                id: "habits",
-                title: "DAILY HABITS & CONTENT STRATEGY",
-                badge: "Logistics",
-                description: "Rules for sustainability: 3 outputs a day (work, git, film). Filming takes 5 mins.",
-                subsections: [
-                    {
-                        title: "Content & Git",
-                        tasks: [
-                            { id: "hab-t1", text: "Commit any firmware changes daily with a note" },
-                            { id: "hab-t2", text: "Take a physical photo of the build daily" },
-                            { id: "hab-t3", text: "Update DEVLOG.md (What worked, what failed, what's next)" },
-                            { id: "hab-t4", text: "Film a 20-30s daily clip (Progress, Explainer, or Failure)" }
-                        ],
-                        notes: [
-                            { type: "Content Strategy", text: "60% progress, 30% explainer, 10% honest failures. Use hashtags: #robotics #mechatronics #engineeringstudent #buildlog" }
-                        ]
-                    }
-                ]
             }
         ]
     }
