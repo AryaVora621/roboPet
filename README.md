@@ -85,11 +85,11 @@ This roadmap is a detailed field manual for Phase 1.
 The goal is to prove every single component works before it goes inside a chassis. A bug on the breadboard takes five minutes to fix; after assembly, it takes three hours.
 
 **Day 1 — Power system only**
-- [x] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
+- [ ] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
 - [x] Bring up XL4016 #1 with no load, trim to exactly 7.2 V
 - [x] Bring up XL4016 #2 to exactly 5.0 V
 - [x] Wire both bucks in parallel from the pack and confirm both rails hold voltages
-- [ ] Add 1000 µF cap on each output rail and measure again (check for voltage pull-down)
+- [x] Add 1000 µF cap on each output rail and measure again (check for voltage pull-down)
 
 **Day 2 — ESP32 and digital peripherals**
 - [ ] Power ESP32 from 5 V logic rail via VIN pin, confirm it boots
