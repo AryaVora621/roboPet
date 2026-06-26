@@ -223,7 +223,9 @@ async function fetchProgressApi() {
     return getLocalProgress();
 }
 
-async function saveProgressApi(progressObj) {
+let saveTimeout = null;
+
+async function executeApiSave(progressObj) {
     const tasks = [];
     roadmapData.forEach(phase => {
         phase.sections.forEach(sec => {
@@ -248,9 +250,25 @@ async function saveProgressApi(progressObj) {
             body: JSON.stringify({ progressObj, tasks })
         });
         if (!res.ok) throw new Error('API save failed');
+        console.log('Successfully synced with GitHub/KV');
     } catch (e) {
         console.error('API save failed, falling back to local storage', e);
     }
+}
+
+function saveProgressApi(progressObj) {
+    // Clone the object to capture current state before debounce delay
+    const currentState = JSON.parse(JSON.stringify(progressObj));
+    
+    if (saveTimeout) {
+        clearTimeout(saveTimeout);
+    }
+    
+    // Wait 1.5 seconds after the last click before pushing to GitHub
+    // This prevents API race conditions and GitHub SHA conflicts
+    saveTimeout = setTimeout(() => {
+        executeApiSave(currentState);
+    }, 1500);
 }
 
 async function initRoadmap() {
