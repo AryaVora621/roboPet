@@ -2,8 +2,11 @@
 wifi.txt
 webrepl_cfg.py
 
-# Content Creation
-shortform_scripts/
+# Project Rules and Logs
+.agents/
+ai/logs/
+logs/
+ai/AGENTS.md
 
 # Python
 __pycache__/

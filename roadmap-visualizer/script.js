@@ -387,3 +387,88 @@ window.toggleTask = function(taskId, element) {
 }
 
 document.addEventListener('DOMContentLoaded', initRoadmap);
+
+// ----- Tabs and Scripts Logic -----
+
+let scriptAuthPassword = null;
+
+window.switchTab = function(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+    
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+    document.getElementById(`${tabName}-container`).style.display = tabName === 'roadmap' ? 'flex' : 'block';
+
+    if (tabName === 'scripts' && !scriptAuthPassword) {
+        unlockScripts();
+    }
+}
+
+async function unlockScripts() {
+    const password = prompt('Enter admin password to view scripts:');
+    if (!password) {
+        switchTab('roadmap');
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/scripts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password, action: 'list' })
+        });
+        
+        if (!res.ok) {
+            alert('Unauthorized: Incorrect password');
+            switchTab('roadmap');
+            return;
+        }
+        
+        scriptAuthPassword = password;
+        const data = await res.json();
+        renderScriptsList(data.files);
+    } catch (e) {
+        alert('Failed to connect to API');
+        switchTab('roadmap');
+    }
+}
+
+function renderScriptsList(files) {
+    const list = document.getElementById('scripts-list');
+    list.innerHTML = '';
+    
+    if (!files || files.length === 0) {
+        list.innerHTML = '<li>No scripts found.</li>';
+        return;
+    }
+    
+    files.forEach(file => {
+        const li = document.createElement('li');
+        li.textContent = file;
+        li.onclick = () => loadScript(file, li);
+        list.appendChild(li);
+    });
+}
+
+async function loadScript(filename, listItem) {
+    document.querySelectorAll('.scripts-list li').forEach(li => li.classList.remove('active-script'));
+    if (listItem) listItem.classList.add('active-script');
+    
+    const contentArea = document.getElementById('script-content-area');
+    contentArea.innerHTML = '<p class="placeholder-text">Loading...</p>';
+    
+    try {
+        const res = await fetch('/api/scripts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: scriptAuthPassword, action: 'read', file: filename })
+        });
+        
+        if (!res.ok) throw new Error('Failed to fetch file');
+        
+        const data = await res.json();
+        contentArea.innerHTML = marked.parse(data.content);
+    } catch (e) {
+        contentArea.innerHTML = `<p class="placeholder-text" style="color: var(--secondary)">Error loading script: ${e.message}</p>`;
+    }
+}

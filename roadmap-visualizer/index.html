@@ -6,6 +6,7 @@
     <title>roboPet Roadmap</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="background-effects">
@@ -28,8 +29,29 @@
         </div>
     </header>
 
-    <main id="roadmap-container" class="roadmap-container">
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('roadmap')" id="tab-roadmap">Roadmap</button>
+        <button class="tab-btn" onclick="switchTab('scripts')" id="tab-scripts">Scripts Viewer</button>
+    </div>
+
+    <main id="roadmap-container" class="roadmap-container tab-content active">
         <!-- Rendered by JS -->
+    </main>
+
+    <main id="scripts-container" class="scripts-container tab-content" style="display: none;">
+        <div class="scripts-layout">
+            <aside class="scripts-sidebar">
+                <h3>Scripts</h3>
+                <ul id="scripts-list" class="scripts-list">
+                    <!-- Script items go here -->
+                </ul>
+            </aside>
+            <section class="scripts-main glass-panel">
+                <div id="script-content-area" class="markdown-body">
+                    <p class="placeholder-text">Select a script to view its contents.</p>
+                </div>
+            </section>
+        </div>
     </main>
 
     <script src="script.js"></script>
