@@ -85,7 +85,7 @@ This roadmap is a detailed field manual for Phase 1.
 The goal is to prove every single component works before it goes inside a chassis. A bug on the breadboard takes five minutes to fix; after assembly, it takes three hours.
 
 **Day 1 — Power system only**
-- [ ] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
+- [x] Set up bench: 3S pack, fuse holder, power switch, both XL4016s, multimeter
 - [ ] Bring up XL4016 #1 with no load, trim to exactly 7.2 V
 - [ ] Bring up XL4016 #2 to exactly 5.0 V
 - [ ] Wire both bucks in parallel from the pack and confirm both rails hold voltages
