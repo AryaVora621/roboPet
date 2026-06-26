@@ -178,7 +178,7 @@ The same raw material feeds the social post, the README, and the eventual writeu
 ---
 
 ## Status
-Phase 1 · Stage 0 — bench bring-up (pre-build, awaiting filament)
+Phase 1 · Project infrastructure complete (Interactive Roadmap Deployed). Starting Day 1 (Power system).
 
 ## License
 Open-source (hardware + firmware + software). License TBD.
