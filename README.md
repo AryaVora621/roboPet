@@ -96,11 +96,11 @@ My goal is to prove every single component works before it goes inside a chassis
 - [x] Blink an LED on a GPIO pin
 - [x] Bring up OLED over I2C (print 'roboPet')
 - [x] Bring up WS2812 (cycle through colors)
-- [ ] Check logic rail current draw with OLED/WS2812 running (< 500 mA)
+- [x] Check logic rail current draw with OLED/WS2812 running (< 500 mA)
 
 **Day 3 — Servos and IMU**
-- [ ] Plug one servo into 7.2 V rail (not breadboard), signal to ESP32. Sweep 0 to 180°
-- [ ] Tune attach() pulse range (500-2500 µs defaults might be wrong). Listen for grinding
+- [x] Plug one servo into 7.2 V rail (not breadboard), signal to ESP32. Sweep 0 to 180°
+- [x] Tune attach() pulse range (500-2500 µs defaults might be wrong). Listen for grinding
 - [ ] Wire all 8 servos. Sweep simultaneously and watch 7.2 V rail sag (add bulk caps if below 6.8 V)
 - [ ] Wire MPU6050 (I2C 0x68). Print raw accel/gyro to Serial at 100 Hz. Verify gravity on Z axis
 
