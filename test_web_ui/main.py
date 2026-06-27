@@ -6,12 +6,35 @@ import ssd1306
 import gc
 import faces
 import time
+from machine import PWM, Pin
 
 # --- PINS (Adjust these if your wiring is different!) ---
 I2C_SDA_PIN = 21
 I2C_SCL_PIN = 22
 LED_PIN = 4
+SERVO_PINS = [13, 14]
 # --------------------------------------------------------
+
+# Initialize Servos
+servos = []
+for pin in SERVO_PINS:
+    try:
+        pwm = PWM(Pin(pin), freq=50)
+        # Stop signal on boot (1500us = neutral for 360deg continuous servos)
+        pwm.duty_u16(int(1500 / 20000 * 65535))
+        servos.append(pwm)
+        print("Servo initialized on pin", pin)
+    except Exception as e:
+        servos.append(None)
+        print("Failed to init servo on pin", pin, ":", e)
+
+def set_servo_speed(idx, angle):
+    # 360deg continuous: angle 90 = stop (1500us), 0 = full reverse (1000us), 180 = full forward (2000us)
+    angle = max(0, min(180, angle))
+    us = 1000 + int((angle / 180) * 1000)
+    duty = int(us / 20000 * 65535)
+    if idx < len(servos) and servos[idx]:
+        servos[idx].duty_u16(duty)
 
 # Initialize WS2811
 np = None
@@ -114,7 +137,7 @@ if oled:
 
 try:
     import webrepl
-    webrepl.start()
+    webrepl.start(password='robopet_admin')
     print("WebREPL started.")
 except Exception as e:
     print("WebREPL start failed:", e)
@@ -189,6 +212,19 @@ while True:
             except Exception as e:
                 cl.send('HTTP/1.1 500 ERROR\r\n\r\n')
                 
+        elif '/api/servo?' in request_line:
+            try:
+                id_start = request_line.find('id=') + 3
+                id_end = request_line.find('&', id_start)
+                angle_start = request_line.find('angle=') + 6
+                angle_end = request_line.find(' ', angle_start)
+                servo_id = int(request_line[id_start:id_end])
+                angle = int(request_line[angle_start:angle_end])
+                set_servo_speed(servo_id, angle)
+                cl.send('HTTP/1.1 200 OK\r\n\r\n')
+            except Exception as e:
+                cl.send('HTTP/1.1 500 ERROR\r\n\r\n')
+
         elif '/api/color?' in request_line:
             try:
                 r_start = request_line.find('r=') + 2

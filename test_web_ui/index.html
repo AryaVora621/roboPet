@@ -160,6 +160,52 @@
             transition: opacity 0.3s;
             font-weight: 600;
         }
+
+        .servo-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+        }
+
+        .btn-servo {
+            width: 100%;
+            padding: 10px 2px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: rgba(0,0,0,0.3);
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: none;
+        }
+
+        .btn-servo:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .btn-servo:active { transform: translateY(0); }
+
+        .btn-servo.center {
+            border-color: rgba(56, 189, 248, 0.4);
+            color: var(--accent);
+        }
+
+        .servo-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .servo-angle-display {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -184,6 +230,46 @@
                 <button onclick="setFace('sleepy')">Sleepy</button>
                 <button onclick="setFace('look_left')">&lt; Left</button>
                 <button onclick="setFace('look_right')">Right &gt;</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="servo-label">
+                <label>Servo 1 (Pin 13)</label>
+                <span class="servo-angle-display" id="servo0-angle">STOP</span>
+            </div>
+            <div class="servo-grid">
+                <button class="btn-servo" onclick="setServo(0, -180)">◀◀</button>
+                <button class="btn-servo" onclick="setServo(0, -90)">◀ 50%</button>
+                <button class="btn-servo" onclick="setServo(0, -45)">◀ 25%</button>
+                <button class="btn-servo" onclick="setServo(0, -30)">◀ 17%</button>
+                <button class="btn-servo" onclick="setServo(0, -15)">◀ 8%</button>
+                <button class="btn-servo center" onclick="setServo(0, 0)">STOP</button>
+                <button class="btn-servo" onclick="setServo(0, 15)">8% ▶</button>
+                <button class="btn-servo" onclick="setServo(0, 30)">17% ▶</button>
+                <button class="btn-servo" onclick="setServo(0, 45)">25% ▶</button>
+                <button class="btn-servo" onclick="setServo(0, 90)">50% ▶</button>
+                <button class="btn-servo" onclick="setServo(0, 180)">▶▶</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="servo-label">
+                <label>Servo 2 (Pin 14)</label>
+                <span class="servo-angle-display" id="servo1-angle">STOP</span>
+            </div>
+            <div class="servo-grid">
+                <button class="btn-servo" onclick="setServo(1, -180)">◀◀</button>
+                <button class="btn-servo" onclick="setServo(1, -90)">◀ 50%</button>
+                <button class="btn-servo" onclick="setServo(1, -45)">◀ 25%</button>
+                <button class="btn-servo" onclick="setServo(1, -30)">◀ 17%</button>
+                <button class="btn-servo" onclick="setServo(1, -15)">◀ 8%</button>
+                <button class="btn-servo center" onclick="setServo(1, 0)">STOP</button>
+                <button class="btn-servo" onclick="setServo(1, 15)">8% ▶</button>
+                <button class="btn-servo" onclick="setServo(1, 30)">17% ▶</button>
+                <button class="btn-servo" onclick="setServo(1, 45)">25% ▶</button>
+                <button class="btn-servo" onclick="setServo(1, 90)">50% ▶</button>
+                <button class="btn-servo" onclick="setServo(1, 180)">▶▶</button>
             </div>
         </div>
 
@@ -232,6 +318,21 @@
                 else showStatus('Failed to update LED.', true);
             } catch (err) {
                 console.error(err);
+                showStatus('Network error.', true);
+            }
+        }
+
+        async function setServo(id, offset) {
+            // offset: -180=full rev, 0=stop, +180=full fwd. Maps to 0-180 for API (90=stop).
+            const angle = Math.max(0, Math.min(180, 90 + offset));
+            const pct = Math.round((offset / 180) * 100);
+            const label = offset === 0 ? 'STOP' : `${pct > 0 ? '+' : ''}${pct}%`;
+            document.getElementById(`servo${id}-angle`).innerText = label;
+            try {
+                const response = await fetch(`/api/servo?id=${id}&angle=${angle}`);
+                if (response.ok) showStatus(`Servo ${id + 1}: ${label}`);
+                else showStatus('Servo command failed.', true);
+            } catch (err) {
                 showStatus('Network error.', true);
             }
         }

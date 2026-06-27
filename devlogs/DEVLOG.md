@@ -30,3 +30,21 @@ I successfully set up the 3S pack and tuned both XL4016 buck converters. I flash
 
 **What's next:**
 With the power delivery, microcontroller, and over-the-air workflow verified, the next step is connecting and testing the servo motors to begin building the robotic chassis.
+
+---
+
+### Day 2 — Servo Rail & First Servo Test
+**Date:** June 27, 2026
+
+**What I worked on:**
+Soldered in the XL4016 buck converter for the dedicated servo rail (targeting ~7.2V). Updated the ESP32 firmware with new WiFi credentials and resolved a serial upload blocker -- `mpremote` could not interrupt the running web server loop because the bare `except Exception: pass` catch was swallowing `KeyboardInterrupt`. Switched to `ampy` as the upload tool and successfully pushed all firmware files. ESP32 reconnected at `192.168.31.59` on the new network.
+
+Added servo control directly into the web dashboard: two 996R 360-degree continuous rotation servos wired on GPIO 13 and 14, with speed control buttons (◀◀ full reverse through STOP to ▶▶ full forward) in the glassmorphic UI. Verified both servos respond correctly over USB power -- full motion range confirmed. Also fixed WebREPL by passing the password explicitly in `webrepl.start()`, enabling wireless code pushes from here on.
+
+**What I learned:**
+- **Embedded Trap:** A bare `except Exception` in a MicroPython event loop catches `KeyboardInterrupt`, which completely blocks serial tools like `mpremote` from interrupting the program. The fix is to catch only `OSError` (the expected socket timeout exception) and let everything else propagate.
+- 360-degree continuous rotation servos (996R) use PWM pulse width to control speed and direction, not angle. The neutral/stop point is ~1500µs. This is fundamentally different from positional servos and the firmware mapping has to reflect it -- 500-2500µs (positional range) becomes 1000-2000µs (speed range) with 1500µs as center.
+- WebREPL on MicroPython v1.28 requires the password to be passed explicitly to `webrepl.start(password='...')` -- relying on `webrepl_cfg.py` alone silently fails on some builds.
+
+**What's next:**
+Day 3: Power both rails from the 3S LiPo battery pack and test the servos at full 7.2V servo rail voltage. Measure real stall current per servo to validate the fuse and bulk capacitor sizing. If all 8 servos are ready, wire them all up and verify the ESP32 can drive them simultaneously without brownout.
